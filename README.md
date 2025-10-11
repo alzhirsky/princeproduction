@@ -44,6 +44,8 @@ pnpm --filter @prince/web dev           # веб-клиент на http://localh
 - [docs/architecture.md](docs/architecture.md) — описание архитектуры, модулей и интеграций.
 - [docs/infrastructure.md](docs/infrastructure.md) — рекомендации по инфраструктуре и docker-compose.
 - [docs/miniapp-preview.html](docs/miniapp-preview.html) — статический предпросмотр Telegram mini-app.
+- [docs/telegram-miniapp.md](docs/telegram-miniapp.md) — подробный гайд по запуску WebApp.
+- [docs/telegram-miniapp.html](docs/telegram-miniapp.html) — HTML-версия гайда (на случай, если IDE не поддерживает Markdown Preview).
 - [docs/testing.md](docs/testing.md) — структура автотестов и сценарии.
 
 ## Следующие шаги

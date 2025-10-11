@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Telegram Mini App — запуск и проверка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: "SF Pro Display", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 32px;
+        background: radial-gradient(120% 120% at 50% 0%, rgba(36, 47, 64, 0.95) 0%, rgba(11, 15, 23, 1) 65%);
+        color: #f4f6ff;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        backdrop-filter: blur(24px);
+        background: rgba(15, 21, 32, 0.72);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 40px 120px rgba(5, 8, 16, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+      h1, h2, h3 {
+        font-weight: 600;
+        color: #e7ecff;
+      }
+      h1 {
+        font-size: 2.75rem;
+        margin-bottom: 12px;
+      }
+      h2 {
+        font-size: 1.75rem;
+        margin-top: 32px;
+      }
+      h3 {
+        font-size: 1.25rem;
+        margin-top: 28px;
+      }
+      p {
+        margin: 12px 0;
+      }
+      ol, ul {
+        margin: 12px 0 12px 24px;
+      }
+      li + li {
+        margin-top: 8px;
+      }
+      a {
+        color: #7aa9ff;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .tip {
+        margin-top: 28px;
+        padding: 18px 20px;
+        border-radius: 18px;
+        background: linear-gradient(140deg, rgba(125, 162, 255, 0.16), rgba(125, 162, 255, 0));
+        border: 1px solid rgba(122, 169, 255, 0.25);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Telegram Mini App — запуск и проверка</h1>
+      <p>
+        Этот гид объясняет, как посмотреть мини-приложение тремя способами: локально в браузере, через статический предпросмотр и внутри Telegram WebApp.
+      </p>
+      <h2>1. Локальный предпросмотр в Next.js</h2>
+      <ol>
+        <li>Выполните стандартный запуск проекта (см. раздел «Запуск локально» в README).</li>
+        <li>После старта фронтенда откройте <a href="http://localhost:3000/miniapp">http://localhost:3000/miniapp</a>.</li>
+        <li>Страница использует тот же стек компонентов, что и основное приложение, и подстраивается под мобильное окно Telegram.</li>
+        <li>Данные загружаются из API (<code>NEXT_PUBLIC_API_BASE_URL</code>). Для полного потока убедитесь, что API и база данных запущены.</li>
+      </ol>
+      <h2>2. Статический предпросмотр</h2>
+      <p>Если нужно показать только визуал без запуска проекта:</p>
+      <ol>
+        <li>Откройте файл <code>docs/miniapp-preview.html</code> в браузере (через двойной клик или команду <code>open docs/miniapp-preview.html</code> на macOS / <code>xdg-open</code> в Linux).</li>
+        <li>Этот файл не требует сборки и демонстрирует основные экраны мини-приложения в стилистике liquid glass.</li>
+      </ol>
+      <h2>3. Запуск внутри Telegram</h2>
+      <ol>
+        <li>Разместите фронтенд на внешнем HTTPS-домене (или воспользуйтесь ngrok/Cloudflared для туннеля к <code>http://localhost:3000</code>).</li>
+        <li>Убедитесь, что переменная <code>NEXT_PUBLIC_API_BASE_URL</code> указывает на доступный снаружи адрес API (по HTTPS).</li>
+        <li>
+          Создайте или отредактируйте бота в BotFather:
+          <ul>
+            <li>Команда <code>/newbot</code> или <code>/setdomain</code>/<code>/setmenubutton</code> для существующего бота.</li>
+            <li>Укажите URL WebApp: <code>https://&lt;ваш-домен&gt;/miniapp</code>.</li>
+          </ul>
+        </li>
+        <li>В коде бота убедитесь, что проверяется подпись <code>initData</code>, полученная в WebApp.</li>
+        <li>Откройте бот в Telegram, нажмите на WebApp-кнопку — загрузится страница <code>/miniapp</code> уже внутри Telegram.</li>
+      </ol>
+      <h3>Диагностика</h3>
+      <ul>
+        <li>Если страница не загружается, проверьте HTTPS-сертификат и корректность публичного URL.</li>
+        <li>Для локальной отладки с ngrok убедитесь, что домен совпадает с тем, что настроен в BotFather.</li>
+        <li>В консоли разработчика WebApp (<code>tg://debug</code>) можно увидеть логи и возможные ошибки авторизации <code>initData</code>.</li>
+      </ul>
+      <div class="tip">
+        <strong>Подсказка:</strong> если в IDE недоступна функция «Open Preview» для Markdown (ошибка <code>command 'markdown.showPreview' not found</code>), воспользуйтесь этой HTML-версией файла или откройте Markdown напрямую в любом редакторе/браузере.
+      </div>
+    </main>
+  </body>
+</html>
