@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String            @id @default(uuid())
+  role           Role
+  tgId           String?           @unique
+  email          String?           @unique
+  hashedPassword String?
+  displayAlias   String
+  status         String            @default("active")
+  createdAt      DateTime          @default(now())
+  designerProfile DesignerProfile?
+  ordersBuyer    Order[]           @relation("BuyerOrders")
+  ordersDesigner Order[]           @relation("DesignerOrders")
+  balance        DesignerBalance?
+  applications   DesignerApplication[]
+  adminLogs      AdminLog[]        @relation("AdminLogs")
+}
+
+enum Role {
+  guest
+  buyer
+  designer
+  admin
+}
+
+model DesignerProfile {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  bio         String
+  skills      String[]
+  portfolio   Json
+  status      String   @default("pending")
+  reviewNotes String?
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  services    Service[]
+}
+
+model Service {
+  id                 String    @id @default(uuid())
+  category           Category  @relation(fields: [categoryId], references: [id])
+  categoryId         String
+  title              String
+  coverUrl           String?
+  descriptionMd      String
+  examples           String[]
+  reviewsEnabled     Boolean   @default(true)
+  assignedDesigner   User?     @relation(fields: [assignedDesignerId], references: [id])
+  assignedDesignerId String?
+  baseDesignerPrice  Int
+  platformMarkup     Int
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  orders             Order[]
+}
+
+model Order {
+  id               String          @id @default(uuid())
+  service          Service         @relation(fields: [serviceId], references: [id])
+  serviceId        String
+  buyer            User            @relation("BuyerOrders", fields: [buyerId], references: [id])
+  buyerId          String
+  designer         User?           @relation("DesignerOrders", fields: [designerId], references: [id])
+  designerId       String?
+  status           String          @default("new")
+  brief            Json
+  totalPrice       Int
+  escrowPaymentId  String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  chat             Chat?
+  payment          Payment?
+  review           Review?
+  dispute          Dispute?
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   String    @unique
+  createdAt DateTime  @default(now())
+  messages  Message[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  chat       Chat     @relation(fields: [chatId], references: [id])
+  chatId     String
+  senderRole String
+  body       String
+  attachments Json
+  createdAt  DateTime @default(now())
+  systemFlag Boolean  @default(false)
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  order          Order    @relation(fields: [orderId], references: [id])
+  orderId        String   @unique
+  amountGross    Int
+  amountNet      Int
+  platformFee    Int
+  status         String
+  provider       String
+  payload        Json
+  createdAt      DateTime @default(now())
+}
+
+model DesignerBalance {
+  designer   User    @relation(fields: [designerId], references: [id])
+  designerId String  @id
+  available  Int     @default(0)
+  pending    Int     @default(0)
+  updatedAt  DateTime @updatedAt
+  payouts    PayoutRequest[]
+}
+
+model PayoutRequest {
+  id         String   @id @default(uuid())
+  designer   DesignerBalance @relation(fields: [designerId], references: [designerId])
+  designerId String
+  amount     Int
+  status     String
+  createdAt  DateTime @default(now())
+}
+
+model DesignerApplication {
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  form         Json
+  portfolio    Json
+  status       String   @default("pending")
+  adminComment String?
+  createdAt    DateTime @default(now())
+}
+
+model Dispute {
+  id          String   @id @default(uuid())
+  order       Order    @relation(fields: [orderId], references: [id])
+  orderId     String   @unique
+  openedBy    String
+  reason      String
+  status      String
+  resolution  Json?
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique
+  rating    Int
+  text      String?
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AdminLog {
+  id        String   @id @default(uuid())
+  actor     User     @relation("AdminLogs", fields: [actorId], references: [id])
+  actorId   String
+  action    String
+  entity    String
+  entityId  String
+  diff      Json
+  createdAt DateTime @default(now())
+}

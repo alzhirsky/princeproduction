@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - .env.api
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - '4000:4000'
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    env_file:
+      - .env.web
+    depends_on:
+      - api
+    ports:
+      - '3000:3000'
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: prince
+      POSTGRES_USER: prince
+      POSTGRES_PASSWORD: prince
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+volumes:
+  postgres:

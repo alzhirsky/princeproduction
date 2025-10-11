@@ -1,0 +1,20 @@
+{
+  "name": "princeproduction",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/web",
+    "apps/api",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:web": "pnpm --filter @prince/web dev",
+    "dev:api": "pnpm --filter @prince/api start:dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}
