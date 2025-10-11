@@ -59,6 +59,9 @@ model Service {
   title              String
   coverUrl           String?
   descriptionMd      String
+  format             String?
+  platform           String?
+  turnaround         String?
   examples           String[]
   reviewsEnabled     Boolean   @default(true)
   assignedDesigner   User?     @relation(fields: [assignedDesignerId], references: [id])

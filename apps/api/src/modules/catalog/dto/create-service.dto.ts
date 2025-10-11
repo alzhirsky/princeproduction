@@ -1,4 +1,13 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min
+} from 'class-validator';
 
 export class CreateServiceDto {
   @IsUUID()
@@ -10,11 +19,23 @@ export class CreateServiceDto {
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  descriptionMd: string;
 
   @IsString()
   @IsOptional()
   coverUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  format?: string;
+
+  @IsString()
+  @IsOptional()
+  platform?: string;
+
+  @IsString()
+  @IsOptional()
+  turnaround?: string;
 
   @IsNumber()
   @Min(0)
@@ -31,4 +52,12 @@ export class CreateServiceDto {
   @IsArray()
   @IsOptional()
   examples?: string[] = [];
+
+  @IsUUID()
+  @IsOptional()
+  assignedDesignerId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

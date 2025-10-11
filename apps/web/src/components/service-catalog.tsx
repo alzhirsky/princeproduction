@@ -1,9 +1,13 @@
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { Badge } from './ui/badge';
 import { ServiceCard } from './ui/service-card';
-import { sampleServices } from '@/lib/sample-data';
+import { ServiceSummary } from '@/lib/types';
 
-export function ServiceCatalog() {
+interface ServiceCatalogProps {
+  services: ServiceSummary[];
+}
+
+export function ServiceCatalog({ services }: ServiceCatalogProps) {
   return (
     <section className="space-y-6">
       <header className="flex items-center justify-between">
@@ -16,7 +20,7 @@ export function ServiceCatalog() {
         </Badge>
       </header>
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {sampleServices.map((service) => (
+        {services.map((service) => (
           <ServiceCard key={service.id} service={service} />
         ))}
       </div>

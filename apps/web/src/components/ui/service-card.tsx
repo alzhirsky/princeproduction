@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Service } from '@/lib/sample-data';
+import { ServiceSummary } from '@/lib/types';
 
 interface ServiceCardProps {
-  service: Service;
+  service: ServiceSummary;
 }
 
 export function ServiceCard({ service }: ServiceCardProps) {

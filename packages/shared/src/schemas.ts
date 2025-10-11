@@ -16,6 +16,8 @@ export const briefSchema = z.object({
 
 export const createOrderSchema = z.object({
   serviceId: z.string().uuid(),
+  buyerId: z.string().uuid(),
+  designerId: z.string().uuid().optional(),
   brief: briefSchema,
   attachments: z.array(z.string().url()).max(10).default([])
 });
@@ -40,6 +42,7 @@ export const serviceFiltersSchema = z.object({
 
 export const chatMessageSchema = z.object({
   orderId: z.string().uuid(),
+  senderRole: z.enum(['buyer', 'designer', 'admin']),
   body: z.string().min(1).max(5000),
   attachments: z.array(z.string().url()).max(5).default([])
 });

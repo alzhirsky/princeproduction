@@ -26,17 +26,18 @@ prisma/     # Prisma schema и сид-скрипт
 > Требования: Node.js ≥ 18.17, pnpm ≥ 8, Docker (для PostgreSQL/Redis), Prisma CLI.
 
 ```bash
+cp .env.example .env.local              # при необходимости скорректируйте пути/порты
 pnpm install
-pnpm --filter @prince/web dev    # фронтенд на http://localhost:3000
-pnpm --filter @prince/api start:dev  # API на http://localhost:4000
+docker compose up -d database redis     # поднимает PostgreSQL и Redis по умолчанию
+pnpm prisma migrate deploy              # применяет схему
+pnpm prisma db seed                     # заполняет демо-данные
+
+# Запускаем API и фронтенд в отдельных терминалах
+pnpm --filter @prince/api start:dev     # API доступен на http://localhost:4000
+pnpm --filter @prince/web dev           # веб-клиент на http://localhost:3000
 ```
 
-Для запуска базы данных используйте docker-compose (см. `docs/infrastructure.md`). После поднятия БД выполните миграции и сид:
-
-```bash
-npx prisma migrate dev
-npx ts-node prisma/seed.ts
-```
+> ⚠️ Веб-клиент читает `NEXT_PUBLIC_API_BASE_URL`. Убедитесь, что переменная указывает на адрес API (по умолчанию `http://localhost:4000`).
 
 ## Документация
 
@@ -51,4 +52,17 @@ npx ts-node prisma/seed.ts
 - Подключение провайдера платежей и обработка webhook.
 - Интеграция с Telegram Bot API и initData верификацией.
 - Автоматические тесты (unit/e2e) и пайплайн CI/CD.
+
+## Как посмотреть готовый интерфейс
+
+1. Поднимите базу и выполните миграции/сид (см. раздел «Запуск локально»).
+2. Запустите API (`pnpm --filter @prince/api start:dev`). После запуска доступны REST эндпоинты (`/services`, `/orders`, `/designer-applications`, `/payments`).
+3. Запустите фронтенд (`pnpm --filter @prince/web dev`). Страницы:
+   - `http://localhost:3000/catalog` — живая витрина услуг, данные приходят из API `/services`.
+   - `http://localhost:3000/orders/new?service=<ID>` — форма оформления заказа с автоподстановкой данных из каталога.
+   - `http://localhost:3000/orders/<ID>` — чат заказа с отправкой сообщений в API (`POST /orders/:id/messages`).
+   - `http://localhost:3000/admin` / `.../designer` — демонстрация админки и кабинета дизайнера с моковыми карточками.
+4. Просмотреть Telegram mini-app превью можно из `docs/miniapp-preview.html` (открыть в браузере).
+
+При необходимости соберите всё через Docker Compose (`docker compose up --build`) — конфигурация поднимает API, фронтенд и сервисы PostgreSQL/Redis. Подробнее в `docs/infrastructure.md`.
 

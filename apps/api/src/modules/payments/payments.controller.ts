@@ -1,12 +1,13 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
+import { CreateHoldDto } from './dto/create-hold.dto';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly payments: PaymentsService) {}
 
   @Post('create-hold')
-  createHold(@Body() payload: { orderId: string; amount: number }) {
+  createHold(@Body() payload: CreateHoldDto) {
     return this.payments.createHold(payload.orderId, payload.amount);
   }
 

@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { ListServicesDto } from './dto/list-services.dto';
 
 @Controller('services')
 export class CatalogController {
@@ -13,8 +14,13 @@ export class CatalogController {
   }
 
   @Get()
-  listServices() {
-    return this.catalog.listServices();
+  listServices(@Query() query: ListServicesDto) {
+    return this.catalog.listServices(query);
+  }
+
+  @Get(':id')
+  getService(@Param('id') id: string) {
+    return this.catalog.getServiceById(id);
   }
 
   @Post()

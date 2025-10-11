@@ -1,23 +1,30 @@
-'use client';
+import { fetchService, fetchServices } from '@/lib/api';
+import { notFound } from 'next/navigation';
 
-import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
-import { sampleServices } from '@/lib/sample-data';
-import { briefSchema } from '@prince/shared';
-import { z } from 'zod';
+interface NewOrderPageProps {
+  searchParams?: { service?: string };
+}
 
-const formSchema = z.object({
-  goal: z.string().min(3),
-  platform: z.string().min(2),
-  format: z.string().min(2),
-  deadline: z.string().min(3),
-  notes: z.string().optional()
-});
+export default async function NewOrderPage({ searchParams }: NewOrderPageProps) {
+  const requestedServiceId = searchParams?.service;
 
-export default function NewOrderPage() {
-  const params = useSearchParams();
-  const serviceId = params.get('service');
-  const service = useMemo(() => sampleServices.find((item) => item.id === serviceId) ?? sampleServices[0], [serviceId]);
+  let service = null;
+  if (requestedServiceId) {
+    try {
+      service = await fetchService(requestedServiceId);
+    } catch (error) {
+      console.warn('Service not found, falling back to first available', error);
+    }
+  }
+
+  if (!service) {
+    const services = await fetchServices();
+    service = services[0] ?? null;
+  }
+
+  if (!service) {
+    notFound();
+  }
 
   return (
     <div className="glass p-8">
@@ -38,19 +45,31 @@ export default function NewOrderPage() {
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Платформа</span>
-            <input className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white" defaultValue={service.platform} />
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
+              defaultValue={service.platform ?? ''}
+            />
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Формат</span>
-            <input className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white" defaultValue={service.format} />
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
+              defaultValue={service.format ?? ''}
+            />
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Сроки</span>
-            <input className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white" defaultValue={service.turnaround} />
+            <input
+              className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
+              defaultValue={service.turnaround ?? ''}
+            />
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Дополнительно</span>
-            <textarea className="min-h-[120px] w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white" placeholder="Референсы, брендбук, сценарий" />
+            <textarea
+              className="min-h-[120px] w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
+              placeholder="Референсы, брендбук, сценарий"
+            />
           </label>
         </section>
         <button

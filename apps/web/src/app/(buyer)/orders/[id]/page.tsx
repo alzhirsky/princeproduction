@@ -1,43 +1,35 @@
-'use client';
+import { OrderChatClient } from '@/components/order-chat-client';
+import { fetchOrder } from '@/lib/api';
+import { notFound } from 'next/navigation';
 
-import { useParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
-import { sampleServices } from '@/lib/sample-data';
-import { ChatThread } from '@/components/ui/chat-thread';
+interface OrderChatPageProps {
+  params: { id: string };
+}
 
-export default function OrderChatPage() {
-  const { id } = useParams<{ id: string }>();
-  const service = useMemo(() => sampleServices.find((item) => item.id === id) ?? sampleServices[0], [id]);
-  const [messages, setMessages] = useState([
-    {
-      id: 'm1',
-      role: 'designer' as const,
-      content: 'Привет! Готов начать работу, уточните про брендбук?',
-      timestamp: '10:21'
-    },
-    {
-      id: 'm2',
-      role: 'buyer' as const,
-      content: 'Привет! Брендбук приложил, основная палитра — графит/лазурь.',
-      timestamp: '10:24'
-    }
-  ]);
+export default async function OrderChatPage({ params }: OrderChatPageProps) {
+  let order;
+  try {
+    order = await fetchOrder(params.id);
+  } catch (error) {
+    console.error('Failed to load order', error);
+    notFound();
+  }
+
+  if (!order) {
+    notFound();
+  }
+
+  const serviceTitle = order.service?.title ?? 'Услуга';
+  const statusLabel = order.status.replace(/_/g, ' ');
+  const messages = order.chat?.messages ?? [];
 
   return (
     <div className="space-y-6">
       <header className="glass p-6">
-        <h1 className="text-2xl font-semibold">Заказ · {service.title}</h1>
-        <p className="text-sm text-white/60">Статус: в работе · чат обезличен (Покупатель ↔ Дизайнер)</p>
+        <h1 className="text-2xl font-semibold">Заказ · {serviceTitle}</h1>
+        <p className="text-sm text-white/60">Статус: {statusLabel} · чат обезличен (Покупатель ↔ Дизайнер)</p>
       </header>
-      <ChatThread
-        messages={messages}
-        onSend={(message) =>
-          setMessages((prev) => [
-            ...prev,
-            { id: String(Date.now()), role: 'buyer', content: message, timestamp: new Date().toLocaleTimeString('ru-RU') }
-          ])
-        }
-      />
+      <OrderChatClient orderId={order.id} initialMessages={messages} />
     </div>
   );
 }

@@ -4,26 +4,26 @@ import { FormEvent, useRef } from 'react';
 
 interface ChatMessage {
   id: string;
-  role: 'buyer' | 'designer' | 'admin';
-  content: string;
-  timestamp: string;
+  senderRole: 'buyer' | 'designer' | 'admin';
+  body: string;
+  createdAt: string;
 }
 
 interface ChatThreadProps {
   messages: ChatMessage[];
-  onSend: (message: string) => void;
+  onSend: (message: string) => void | Promise<void>;
 }
 
 export function ChatThread({ messages, onSend }: ChatThreadProps) {
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
     const message = String(formData.get('message') ?? '');
     if (message.trim().length === 0) return;
-    onSend(message);
+    await onSend(message);
     form.reset();
   };
 
@@ -34,13 +34,13 @@ export function ChatThread({ messages, onSend }: ChatThreadProps) {
           <article key={message.id} className="flex flex-col gap-1">
             <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/40">
               <span>
-                {message.role === 'buyer' && 'Покупатель'}
-                {message.role === 'designer' && 'Дизайнер'}
-                {message.role === 'admin' && 'Админ'}
+                {message.senderRole === 'buyer' && 'Покупатель'}
+                {message.senderRole === 'designer' && 'Дизайнер'}
+                {message.senderRole === 'admin' && 'Админ'}
               </span>
-              <span>{message.timestamp}</span>
+              <span>{new Date(message.createdAt).toLocaleTimeString('ru-RU')}</span>
             </div>
-            <p className="max-w-3xl rounded-3xl bg-white/8 p-4 text-sm text-white/80 shadow-glass">{message.content}</p>
+            <p className="max-w-3xl rounded-3xl bg-white/8 p-4 text-sm text-white/80 shadow-glass">{message.body}</p>
           </article>
         ))}
       </div>

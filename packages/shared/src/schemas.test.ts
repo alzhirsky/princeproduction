@@ -5,6 +5,7 @@ describe('shared schemas', () => {
   it('validates order creation payload', () => {
     const payload = {
       serviceId: 'b45a6d6a-7f13-4c64-b75d-b09ffcc7e59f',
+      buyerId: 'f7fb9cb9-6d34-49ed-a2ea-0211e0745c27',
       brief: {
         goal: 'CTR boost',
         platform: 'YouTube',

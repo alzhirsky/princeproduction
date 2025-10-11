@@ -1,14 +1,4 @@
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  format: string;
-  platform: string;
-  turnaround: string;
-  totalPrice: number;
-  designerAlias: string;
-  coverUrl: string;
-}
+import { ServiceSummary } from './types';
 
 export interface Designer {
   id: string;
@@ -18,9 +8,11 @@ export interface Designer {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-export const sampleServices: Service[] = [
+export const sampleServices: ServiceSummary[] = [
   {
     id: 'b45a6d6a-7f13-4c64-b75d-b09ffcc7e59f',
+    categoryId: 'demo-category',
+    categoryName: 'YouTube',
     title: 'Превью для YouTube',
     description: 'Хайповый кликабельный дизайн с учётом бренда и референсов.',
     format: '1920×1080 JPG/PSD',
@@ -32,6 +24,8 @@ export const sampleServices: Service[] = [
   },
   {
     id: 'f7fb9cb9-6d34-49ed-a2ea-0211e0745c27',
+    categoryId: 'demo-category',
+    categoryName: 'Vertical Video',
     title: 'Монтаж Reels/TikTok',
     description: 'Вертикальное видео с графикой, субтитрами и звуком.',
     format: '1080×1920 MP4',
@@ -43,6 +37,8 @@ export const sampleServices: Service[] = [
   },
   {
     id: '4a77d2b5-4cd4-4b5e-84c7-229a51f7c71d',
+    categoryId: 'demo-category',
+    categoryName: 'Stories',
     title: 'Пакет сторис',
     description: 'Серия из 5 сторис с анимацией и интерактивом.',
     format: '1080×1920 PSD/MP4',

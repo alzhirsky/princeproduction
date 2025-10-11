@@ -1,19 +1,21 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { DesignersService } from './designers.service';
-import { CreateApplicationDto } from './dto/create-application.dto';
+import { SubmitApplicationDto } from './dto/submit-application.dto';
+import { DesignerApplicationStatus } from '@prince/shared';
 
 @Controller('designer-applications')
 export class DesignersController {
   constructor(private readonly designers: DesignersService) {}
 
   @Get()
-  listApplications() {
-    return this.designers.listApplications();
+  listApplications(@Query('status') status?: DesignerApplicationStatus) {
+    return this.designers.listApplications(status);
   }
 
   @Post()
-  create(@Body() payload: CreateApplicationDto) {
-    return this.designers.submitApplication('designer-temp', payload);
+  create(@Body() payload: SubmitApplicationDto) {
+    const { userId, ...application } = payload;
+    return this.designers.submitApplication(userId, application);
   }
 
   @Post(':id/approve')

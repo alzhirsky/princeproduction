@@ -27,6 +27,13 @@ export class CreateOrderDto {
   @IsUUID()
   serviceId: string;
 
+  @IsUUID()
+  buyerId: string;
+
+  @IsUUID()
+  @IsOptional()
+  designerId?: string;
+
   @ValidateNested()
   @Type(() => BriefDto)
   brief: BriefDto;

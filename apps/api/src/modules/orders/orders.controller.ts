@@ -2,14 +2,16 @@ import { Body, Controller, Get, Param, Post, Query, Patch } from '@nestjs/common
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { ListOrdersDto } from './dto/list-orders.dto';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly orders: OrdersService) {}
 
   @Get()
-  list(@Query('status') status?: string) {
-    return this.orders.list(status);
+  list(@Query() query: ListOrdersDto) {
+    return this.orders.list(query);
   }
 
   @Get(':id')
@@ -20,6 +22,11 @@ export class OrdersController {
   @Post()
   create(@Body() payload: CreateOrderDto) {
     return this.orders.create(payload);
+  }
+
+  @Post(':id/messages')
+  addMessage(@Param('id') id: string, @Body() payload: CreateMessageDto) {
+    return this.orders.addMessage(id, payload);
   }
 
   @Patch(':id/status')
