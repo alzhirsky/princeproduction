@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liquid Glass Mini App Preview</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: radial-gradient(circle at top, #1f1b2e, #0c0d18 65%);
+        --glass: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.18);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.62);
+        --accent: linear-gradient(135deg, #7f7bff, #49c6ff);
+        font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+        color: var(--text);
+      }
+
+      .preview {
+        width: min(1080px, 100%);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 48px;
+        padding: 48px;
+        background: var(--glass);
+        backdrop-filter: blur(18px) saturate(140%);
+        border-radius: 32px;
+        border: 1px solid var(--border);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview::before {
+        content: '';
+        position: absolute;
+        inset: -120px -80px auto auto;
+        width: 260px;
+        height: 260px;
+        background: var(--accent);
+        opacity: 0.25;
+        filter: blur(48px);
+        border-radius: 50%;
+      }
+
+      .preview::after {
+        content: '';
+        position: absolute;
+        inset: auto auto -140px -60px;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 65%);
+        filter: blur(60px);
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 2vw + 1.4rem, 3.1rem);
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+        max-width: 520px;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 22px;
+        color: rgba(255, 255, 255, 0.75);
+        display: grid;
+        gap: 10px;
+      }
+
+      li::marker {
+        color: rgba(123, 187, 255, 0.9);
+      }
+
+      .device {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+      }
+
+      .phone-shell {
+        width: clamp(240px, 24vw, 280px);
+        aspect-ratio: 9 / 19.5;
+        border-radius: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 18px;
+        background: rgba(15, 15, 25, 0.55);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 32px 60px rgba(0, 0, 0, 0.6);
+        position: relative;
+        backdrop-filter: blur(24px);
+      }
+
+      .phone-shell::before {
+        content: '';
+        position: absolute;
+        inset: 12px 50%;
+        width: 40%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        transform: translateX(-50%);
+      }
+
+      .screen {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 26px;
+        background: radial-gradient(circle at top, rgba(68, 74, 128, 0.9), rgba(13, 17, 32, 0.92));
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .miniapp-header {
+        padding: 18px 20px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .subtitle {
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .chat-preview {
+        flex: 1;
+        padding: 0 14px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow: hidden;
+      }
+
+      .message {
+        padding: 12px 16px;
+        border-radius: 18px;
+        max-width: 88%;
+        font-size: 0.85rem;
+        line-height: 1.45;
+      }
+
+      .message.buyer {
+        background: rgba(65, 159, 255, 0.18);
+        margin-left: auto;
+        border-top-right-radius: 6px;
+      }
+
+      .message.designer {
+        background: rgba(255, 255, 255, 0.08);
+        margin-right: auto;
+        border-top-left-radius: 6px;
+      }
+
+      .footer {
+        padding: 14px 20px 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        gap: 10px;
+      }
+
+      .action {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(18, 20, 32, 0.8);
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.8rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .action.primary {
+        background: linear-gradient(135deg, rgba(110, 143, 255, 0.8), rgba(87, 224, 255, 0.85));
+        color: rgba(15, 16, 25, 0.95);
+        font-weight: 600;
+        border: none;
+      }
+
+      .action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 32px 12px;
+        }
+
+        .preview {
+          padding: 32px 24px;
+          gap: 32px;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="preview">
+      <div class="content">
+        <h1>Telegram Mini App</h1>
+        <p>
+          Этот статический предпросмотр показывает, как выглядит стеклянный интерфейс мини-приложения: компактный каталог,
+          обезличенный чат, быстрые действия и поддержка WebApp API Telegram с проверкой <code>initData</code>.
+        </p>
+        <ul>
+          <li>Liquid glass карточки и градиенты в духе iOS 17/26.</li>
+          <li>Оптимизация под тёмную тему Telegram и адаптивную вёрстку.</li>
+          <li>Быстрые сценарии: подтверждение заказа, запрос правок, отмена.</li>
+        </ul>
+      </div>
+      <div class="device" aria-label="Превью мини-приложения">
+        <div class="phone-shell">
+          <div class="screen">
+            <header class="miniapp-header">
+              <span class="title">Каталог платформы</span>
+              <span class="subtitle">Дизайнерские услуги · Эскроу оплата</span>
+              <div class="chips">
+                <span class="chip">Бриф 2 мин</span>
+                <span class="chip">Оплата в холде</span>
+                <span class="chip">Анонимный чат</span>
+              </div>
+            </header>
+            <section class="chat-preview">
+              <div class="message designer">
+                Добро пожаловать! Расскажите о задачах: формат, сроки, референсы. Мы начнём, как только поступит оплата в холд.
+              </div>
+              <div class="message buyer">Мне нужен вертикальный постер 1080×1920 для анонса релиза, цвета — глубокий фиолетовый.</div>
+              <div class="message designer">Принято! Прикрепите бренд-гайд, и я отправлю превью в течение 12 часов.</div>
+            </section>
+            <footer class="footer">
+              <button class="action" type="button">Запросить правки</button>
+              <button class="action primary" type="button">Подтвердить</button>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

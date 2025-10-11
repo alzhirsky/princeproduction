@@ -42,6 +42,7 @@ npx ts-node prisma/seed.ts
 
 - [docs/architecture.md](docs/architecture.md) — описание архитектуры, модулей и интеграций.
 - [docs/infrastructure.md](docs/infrastructure.md) — рекомендации по инфраструктуре и docker-compose.
+- [docs/miniapp-preview.html](docs/miniapp-preview.html) — статический предпросмотр Telegram mini-app.
 - [docs/testing.md](docs/testing.md) — структура автотестов и сценарии.
 
 ## Следующие шаги
