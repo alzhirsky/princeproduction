@@ -62,7 +62,11 @@ pnpm --filter @prince/web dev           # веб-клиент на http://localh
    - `http://localhost:3000/orders/new?service=<ID>` — форма оформления заказа с автоподстановкой данных из каталога.
    - `http://localhost:3000/orders/<ID>` — чат заказа с отправкой сообщений в API (`POST /orders/:id/messages`).
    - `http://localhost:3000/admin` / `.../designer` — демонстрация админки и кабинета дизайнера с моковыми карточками.
-4. Просмотреть Telegram mini-app превью можно из `docs/miniapp-preview.html` (открыть в браузере).
+4. Мини-приложение Telegram доступно двумя способами:
+   - Быстрый предпросмотр внутри Next.js — откройте `http://localhost:3000/miniapp` после запуска фронтенда.
+   - Статическая демо-страница `docs/miniapp-preview.html` — подойдёт, если нужно просто взглянуть на визуал.
+
+Подробная инструкция по запуску WebApp внутри Telegram описана в [docs/telegram-miniapp.md](docs/telegram-miniapp.md).
 
 При необходимости соберите всё через Docker Compose (`docker compose up --build`) — конфигурация поднимает API, фронтенд и сервисы PostgreSQL/Redis. Подробнее в `docs/infrastructure.md`.
 
