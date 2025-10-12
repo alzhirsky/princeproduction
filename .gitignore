@@ -3,6 +3,8 @@ node_modules
 .env
 .env.*
 !.env.example
+deploy/env/*.env
+!deploy/env/*.env.example
 dist
 .next
 coverage

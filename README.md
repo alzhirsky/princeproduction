@@ -21,14 +21,26 @@ prisma/     # Prisma schema и сид-скрипт
 - Общие схемы в `@prince/shared` для фронта и бэка.
 - Prisma-схема доменных моделей и сид с тестовыми данными.
 
+## Подготовка окружения
+
+1. Скопируйте шаблон `.env.example` в `.env.local` и скорректируйте переменные при необходимости.
+2. При работе через Docker создайте файлы окружения для сервисов (доступны шаблоны в `deploy/env/*.dev.env.example`):
+
+   ```bash
+   cp deploy/env/postgres.dev.env.example deploy/env/postgres.env
+   cp deploy/env/api.dev.env.example deploy/env/api.env
+   cp deploy/env/web.dev.env.example deploy/env/web.env
+   ```
+
+3. Для продакшена используйте шаблоны `deploy/env/*.prod.env.example` и задайте собственные пароли/секреты/домены.
+
 ## Запуск локально
 
 > Требования: Node.js ≥ 18.17, pnpm ≥ 8, Docker (для PostgreSQL/Redis), Prisma CLI.
 
 ```bash
-cp .env.example .env.local              # при необходимости скорректируйте пути/порты
 pnpm install
-docker compose up -d database redis     # поднимает PostgreSQL и Redis по умолчанию
+docker compose up -d postgres redis     # поднимает PostgreSQL и Redis по умолчанию
 pnpm prisma migrate deploy              # применяет схему
 pnpm prisma db seed                     # заполняет демо-данные
 
@@ -37,7 +49,7 @@ pnpm --filter @prince/api start:dev     # API доступен на http://local
 pnpm --filter @prince/web dev           # веб-клиент на http://localhost:3000
 ```
 
-> ⚠️ Веб-клиент читает `NEXT_PUBLIC_API_BASE_URL`. Убедитесь, что переменная указывает на адрес API (по умолчанию `http://localhost:4000`).
+> ⚠️ Веб-клиент читает `NEXT_PUBLIC_API_BASE_URL`. При локальной разработке укажите `http://localhost:4000`; при работе в Docker значение в `deploy/env/web.env` должно ссылаться на публичный домен (например, `https://api.princeproduction.ru`) и дополнительно установите `API_BASE_URL=http://api:4000` для внутренних серверных запросов.
 
 ## Документация
 
@@ -71,4 +83,9 @@ pnpm --filter @prince/web dev           # веб-клиент на http://localh
 Подробная инструкция по запуску WebApp внутри Telegram описана в [docs/telegram-miniapp.md](docs/telegram-miniapp.md).
 
 При необходимости соберите всё через Docker Compose (`docker compose up --build`) — конфигурация поднимает API, фронтенд и сервисы PostgreSQL/Redis. Подробнее в `docs/infrastructure.md`.
+
+## Продакшн на Ubuntu 22 + собственный домен
+
+- В директории `deploy/` находится production-компоновка (`docker-compose.prod.yml`) и `Caddyfile` с готовым обратным прокси, автоматически получающим TLS-сертификаты.
+- Пошаговый гайд с подготовкой VPS, DNS, SSL и запуском контейнеров опубликован в [docs/deployment-ubuntu.md](docs/deployment-ubuntu.md).
 

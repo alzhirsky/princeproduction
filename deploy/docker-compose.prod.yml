@@ -4,42 +4,50 @@ services:
     image: postgres:15
     restart: unless-stopped
     env_file:
-      - deploy/env/postgres.env
+      - ./env/postgres.env
     volumes:
       - postgres:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    ports:
-      - '6379:6379'
 
   api:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile.api
     restart: unless-stopped
     env_file:
-      - deploy/env/api.env
+      - ./env/api.env
     depends_on:
       - postgres
       - redis
-    ports:
-      - '4000:4000'
 
   web:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile.web
     restart: unless-stopped
     env_file:
-      - deploy/env/web.env
+      - ./env/web.env
     depends_on:
       - api
+
+  caddy:
+    image: caddy:2.7-alpine
+    restart: unless-stopped
     ports:
-      - '3000:3000'
+      - '80:80'
+      - '443:443'
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - web
+      - api
 
 volumes:
   postgres:
+  caddy_data:
+  caddy_config:

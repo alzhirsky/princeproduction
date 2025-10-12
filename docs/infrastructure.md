@@ -1,29 +1,29 @@
 # Инфраструктура и окружение
 
-## Docker Compose (пример)
+## Docker Compose
+
+- `docker-compose.yml` — сборка полного стека для локальной разработки (Next.js + NestJS + PostgreSQL + Redis).
+- `deploy/docker-compose.prod.yml` — production-вариант с Caddy как обратным прокси и автоматическим TLS.
+- Шаблоны переменных окружения находятся в `deploy/env/*.dev.env.example` и `deploy/env/*.prod.env.example`.
+
+### Минимальная конфигурация БД/кэша
 
 ```yaml
-version: '3.9'
 services:
   postgres:
     image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_DB: prince
-      POSTGRES_USER: prince
-      POSTGRES_PASSWORD: prince
-    ports:
-      - '5432:5432'
+    restart: unless-stopped
+    env_file:
+      - deploy/env/postgres.env
     volumes:
       - postgres:/var/lib/postgresql/data
+
   redis:
     image: redis:7-alpine
-    restart: always
-    ports:
-      - '6379:6379'
-volumes:
-  postgres:
+    restart: unless-stopped
 ```
+
+Полный production-файл см. в `deploy/docker-compose.prod.yml` и сопроводительном гайде [docs/deployment-ubuntu.md](deployment-ubuntu.md).
 
 ## CI/CD
 
