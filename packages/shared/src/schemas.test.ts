@@ -28,4 +28,14 @@ describe('shared schemas', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('fills defaults for optional designer fields', () => {
+    const result = designerApplicationSchema.parse({
+      bio: 'Motion designer with 5 years of experience',
+      skills: ['Motion'],
+      portfolioLinks: ['https://example.com']
+    });
+
+    expect(result.portfolioFiles).toEqual([]);
+  });
 });

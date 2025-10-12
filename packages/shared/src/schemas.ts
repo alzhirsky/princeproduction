@@ -26,7 +26,7 @@ export const designerApplicationSchema = z.object({
   bio: z.string().min(10),
   skills: z.array(z.string()).min(1),
   portfolioLinks: z.array(z.string().url()).min(1),
-  portfolioFiles: z.array(z.string().url()).max(10),
+  portfolioFiles: z.array(z.string().url()).max(10).optional().default([]),
   rateNotes: z.string().optional()
 });
 

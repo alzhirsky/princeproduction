@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateApplicationDto {
   @IsString()
@@ -6,13 +6,18 @@ export class CreateApplicationDto {
   bio: string;
 
   @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
   skills: string[];
 
   @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
   portfolioLinks: string[];
 
   @IsArray()
   @IsOptional()
+  @IsString({ each: true })
   portfolioFiles?: string[];
 
   @IsString()

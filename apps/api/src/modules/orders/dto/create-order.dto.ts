@@ -40,5 +40,6 @@ export class CreateOrderDto {
 
   @IsArray()
   @IsOptional()
+  @IsString({ each: true })
   attachments?: string[] = [];
 }

@@ -36,15 +36,16 @@ export class CatalogService {
       ];
     }
 
-    if (filters.priceFrom || filters.priceTo) {
-      where.AND = [
-        {
-          baseDesignerPrice: filters.priceFrom ? { gte: filters.priceFrom } : undefined
-        },
-        {
-          baseDesignerPrice: filters.priceTo ? { lte: filters.priceTo } : undefined
-        }
-      ];
+    const priceFilters: Prisma.ServiceWhereInput[] = [];
+    if (filters.priceFrom !== undefined) {
+      priceFilters.push({ baseDesignerPrice: { gte: filters.priceFrom } });
+    }
+    if (filters.priceTo !== undefined) {
+      priceFilters.push({ baseDesignerPrice: { lte: filters.priceTo } });
+    }
+
+    if (priceFilters.length > 0) {
+      where.AND = [...(where.AND ?? []), ...priceFilters];
     }
 
     const orderBy: Prisma.ServiceOrderByWithRelationInput[] = [];
@@ -68,10 +69,10 @@ export class CatalogService {
     return services
       .filter((service) => {
         const total = service.baseDesignerPrice + service.platformMarkup;
-        if (filters.priceFrom && total < filters.priceFrom) {
+        if (filters.priceFrom !== undefined && total < filters.priceFrom) {
           return false;
         }
-        if (filters.priceTo && total > filters.priceTo) {
+        if (filters.priceTo !== undefined && total > filters.priceTo) {
           return false;
         }
         return true;
@@ -137,13 +138,13 @@ export class CatalogService {
       categoryName: service.category?.name ?? null,
       title: service.title,
       description: service.descriptionMd,
-      coverUrl: service.coverUrl,
+      coverUrl: service.coverUrl ?? null,
       format: service.format,
       platform: service.platform,
       turnaround: service.turnaround,
       totalPrice: service.baseDesignerPrice + service.platformMarkup,
       reviewsEnabled: service.reviewsEnabled,
-      examples: service.examples,
+      examples: Array.isArray(service.examples) ? service.examples : [],
       designerAlias: service.assignedDesigner?.displayAlias ?? 'Дизайнер платформы'
     };
   }

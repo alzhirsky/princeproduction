@@ -8,6 +8,7 @@ import {
   IsUUID,
   Min
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateServiceDto {
   @IsUUID()
@@ -37,10 +38,12 @@ export class CreateServiceDto {
   @IsOptional()
   turnaround?: string;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   baseDesignerPrice: number;
 
+  @Type(() => Number)
   @IsNumber()
   @Min(0)
   platformMarkup: number;
@@ -51,6 +54,7 @@ export class CreateServiceDto {
 
   @IsArray()
   @IsOptional()
+  @IsString({ each: true })
   examples?: string[] = [];
 
   @IsUUID()

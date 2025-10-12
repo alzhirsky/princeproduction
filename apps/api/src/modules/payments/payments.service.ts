@@ -76,15 +76,16 @@ export class PaymentsService {
   }
 
   async refund(paymentId: string) {
-    const payment = await this.prisma.payment.update({
-      where: { id: paymentId },
-      data: { status: 'refunded' }
-    });
-
-    if (!payment) {
-      throw new NotFoundException('Payment not found');
+    try {
+      return await this.prisma.payment.update({
+        where: { id: paymentId },
+        data: { status: 'refunded' }
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException('Payment not found');
+      }
+      throw error;
     }
-
-    return payment;
   }
 }

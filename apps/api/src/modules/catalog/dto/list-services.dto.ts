@@ -1,5 +1,7 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+
+const SORT_OPTIONS = ['newest', 'price_asc', 'price_desc'] as const;
 
 export class ListServicesDto {
   @IsString()
@@ -24,9 +26,9 @@ export class ListServicesDto {
   @IsOptional()
   priceTo?: number;
 
-  @IsEnum(['newest', 'price_asc', 'price_desc'], {
+  @IsIn(SORT_OPTIONS, {
     message: 'sort must be one of newest|price_asc|price_desc'
   })
   @IsOptional()
-  sort?: 'newest' | 'price_asc' | 'price_desc';
+  sort?: (typeof SORT_OPTIONS)[number];
 }

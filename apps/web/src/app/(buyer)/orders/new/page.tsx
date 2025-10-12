@@ -1,4 +1,5 @@
 import { fetchService, fetchServices } from '@/lib/api';
+import { sampleServices } from '@/lib/sample-data';
 import { notFound } from 'next/navigation';
 
 interface NewOrderPageProps {
@@ -18,13 +19,28 @@ export default async function NewOrderPage({ searchParams }: NewOrderPageProps) 
   }
 
   if (!service) {
-    const services = await fetchServices();
-    service = services[0] ?? null;
+    let fallback = sampleServices[0] ?? null;
+    try {
+      const services = await fetchServices();
+      if (services.length > 0) {
+        fallback = services[0];
+      }
+    } catch (error) {
+      console.warn('Не удалось загрузить услуги для формы заказа, используется пресет', error);
+    }
+
+    service = fallback;
   }
 
   if (!service) {
     notFound();
   }
+
+  const description = service.description?.trim() ?? 'Описание скоро появится.';
+  const platform = service.platform ?? '—';
+  const format = service.format ?? '—';
+  const turnaround = service.turnaround ?? '—';
+  const totalPrice = service.totalPrice.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' });
 
   return (
     <div className="glass p-8">
@@ -33,10 +49,8 @@ export default async function NewOrderPage({ searchParams }: NewOrderPageProps) 
       <form className="mt-8 grid gap-6">
         <section>
           <h2 className="text-xl font-semibold">Услуга</h2>
-          <p className="text-sm text-white/60">{service.description}</p>
-          <p className="mt-2 text-lg font-semibold">
-            {service.totalPrice.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })}
-          </p>
+          <p className="text-sm text-white/60">{description}</p>
+          <p className="mt-2 text-lg font-semibold">{totalPrice}</p>
         </section>
         <section className="grid gap-4">
           <label className="space-y-2">
@@ -47,21 +61,21 @@ export default async function NewOrderPage({ searchParams }: NewOrderPageProps) 
             <span className="text-sm text-white/80">Платформа</span>
             <input
               className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
-              defaultValue={service.platform ?? ''}
+              defaultValue={platform}
             />
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Формат</span>
             <input
               className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
-              defaultValue={service.format ?? ''}
+              defaultValue={format}
             />
           </label>
           <label className="space-y-2">
             <span className="text-sm text-white/80">Сроки</span>
             <input
               className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white"
-              defaultValue={service.turnaround ?? ''}
+              defaultValue={turnaround}
             />
           </label>
           <label className="space-y-2">
@@ -74,7 +88,7 @@ export default async function NewOrderPage({ searchParams }: NewOrderPageProps) 
         </section>
         <button
           type="button"
-          className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-glow transition hover:shadow-glow/70"
+          className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white shadow-glow transition hover:shadow-glow"
         >
           Перейти к оплате (мок)
         </button>

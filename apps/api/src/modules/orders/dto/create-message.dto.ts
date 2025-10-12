@@ -1,8 +1,10 @@
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+const MESSAGE_ROLES = ['buyer', 'designer', 'admin'] as const;
 
 export class CreateMessageDto {
-  @IsEnum(['buyer', 'designer', 'admin'])
-  senderRole: 'buyer' | 'designer' | 'admin';
+  @IsIn(MESSAGE_ROLES)
+  senderRole: (typeof MESSAGE_ROLES)[number];
 
   @IsString()
   @IsNotEmpty()
@@ -10,5 +12,6 @@ export class CreateMessageDto {
 
   @IsArray()
   @IsOptional()
+  @IsString({ each: true })
   attachments?: string[];
 }
