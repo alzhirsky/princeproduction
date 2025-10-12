@@ -1,4 +1,4 @@
-# Развёртывание на Ubuntu 22.04 и домен princeproduction.ru
+# Развёртывание на Ubuntu 22.04 с доменом app.princeproduction.ru
 
 Пошаговое руководство по запуску платформы на VPS с Ubuntu 22.04 LTS и доменом, зарегистрированным на reg.ru. Аналогичный сценарий подойдёт для любого другого домена — замените имена хостов и e-mail.
 
@@ -10,9 +10,12 @@
 
 ## 2. Настройка DNS
 
-1. Создайте A-запись `princeproduction.ru` → IP вашего сервера.
-2. Создайте A-запись `api.princeproduction.ru` → тот же IP.
-3. (Опционально) Добавьте `www` → `princeproduction.ru` через CNAME.
+Убедитесь, что в панели управления reg.ru созданы A-записи:
+
+1. `app.princeproduction.ru` → `95.181.213.96` (или ваш фактический IP VPS) — фронтенд.
+2. `api.princeproduction.ru` → `95.181.213.96` — API и WebSocket.
+
+Опционально можно добавить корневой домен `princeproduction.ru` и `www` (CNAME на `app`), но для работы мини-приложения достаточно двух записей выше.
 
 DNS может обновляться до 30 минут. Продолжайте настройку сервера параллельно.
 
@@ -43,11 +46,12 @@ sudo ufw enable
 
 ```bash
 cd ~
-git clone https://github.com/<your-account>/princeproduction.git
+git clone https://github.com/alzhirsky/princeproduction.git
 cd princeproduction
+git checkout codex/generate-production-level-code-for-ios-style-platform
 ```
 
-> Если репозиторий приватный, настройте SSH-ключ или используйте `git clone git@github.com:...`.
+> Если используется форк, замените URL на адрес своего репозитория. Команда `git checkout` переключит проект на ветку с актуальным кодом платформы.
 
 ## 5. Подготовка переменных окружения
 
@@ -69,10 +73,10 @@ cp deploy/env/web.prod.env.example deploy/env/web.env
 
 ```text
 {
-  email admin@princeproduction.ru  # укажите рабочий email для Let's Encrypt
+  email admin@princeproduction.ru  # укажите рабочий email для Let's Encrypt уведомлений
 }
 
-princeproduction.ru {
+app.princeproduction.ru {
   reverse_proxy web:3000
 }
 
@@ -82,7 +86,7 @@ api.princeproduction.ru {
 }
 ```
 
-> Caddy автоматически выпустит TLS-сертификаты, когда DNS-записи будут направлены на сервер.
+> Caddy автоматически выпустит TLS-сертификаты, когда записи `app` и `api` будут указывать на ваш IP.
 
 ## 6. Сборка и запуск контейнеров
 
@@ -123,7 +127,7 @@ docker compose -f deploy/docker-compose.prod.yml exec api pnpm prisma db seed
 
 ## 8. Проверка работы сайта
 
-1. Откройте `https://princeproduction.ru` — загрузится фронтенд.
+1. Откройте `https://app.princeproduction.ru` — загрузится фронтенд/мини-приложение.
 2. Откройте `https://api.princeproduction.ru/services` — убедитесь, что API отдаёт JSON.
 3. Выполните быструю проверку чата/заказов, создав тестовый заказ и сообщение.
 
@@ -168,4 +172,4 @@ docker compose -f deploy/docker-compose.prod.yml restart caddy
 
 ---
 
-После успешного запуска весь стек будет доступен по адресу `https://princeproduction.ru`, а Telegram Mini App сможет обращаться к API по `https://api.princeproduction.ru` без дополнительной настройки.
+После успешного запуска весь стек будет доступен по адресу `https://app.princeproduction.ru`, а Telegram Mini App сможет обращаться к API по `https://api.princeproduction.ru` без дополнительной настройки.

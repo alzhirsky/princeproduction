@@ -2,7 +2,7 @@
   email admin@princeproduction.ru
 }
 
-princeproduction.ru {
+app.princeproduction.ru {
   encode zstd gzip
   reverse_proxy web:3000
 }
@@ -10,7 +10,7 @@ princeproduction.ru {
 api.princeproduction.ru {
   encode zstd gzip
   reverse_proxy api:4000
-  header Access-Control-Allow-Origin https://princeproduction.ru
+  header Access-Control-Allow-Origin https://app.princeproduction.ru
   header Access-Control-Allow-Methods "GET,POST,PUT,PATCH,DELETE,OPTIONS"
   header Access-Control-Allow-Headers "Authorization,Content-Type"
   @options method OPTIONS

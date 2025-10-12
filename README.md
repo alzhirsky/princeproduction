@@ -93,3 +93,21 @@ pnpm --filter @prince/web dev           # веб-клиент на http://localh
 - В директории `deploy/` находится production-компоновка (`docker-compose.prod.yml`) и `Caddyfile` с готовым обратным прокси, автоматически получающим TLS-сертификаты.
 - Пошаговый гайд с подготовкой VPS, DNS, SSL и запуском контейнеров опубликован в [docs/deployment-ubuntu.md](docs/deployment-ubuntu.md).
 
+## Быстрый чек-лист деплоя на app.princeproduction.ru
+
+1. **DNS** — убедитесь, что `app.princeproduction.ru` и `api.princeproduction.ru` указывают на IP вашего VPS (например, `95.181.213.96`).
+2. **Сервер** — выполните `sudo apt update && sudo apt upgrade -y`, установите Docker (`curl -fsSL https://get.docker.com | sudo sh`) и добавьте пользователя в группу `docker`.
+3. **Код** — клонируйте репозиторий и переключитесь на нужную ветку:
+   ```bash
+   git clone https://github.com/alzhirsky/princeproduction.git
+   cd princeproduction
+   git checkout codex/generate-production-level-code-for-ios-style-platform
+   ```
+4. **Переменные окружения** — создайте `deploy/env/postgres.env`, `deploy/env/api.env`, `deploy/env/web.env` из соответствующих `*.prod.env.example` и пропишите пароли/секреты, `NEXT_PUBLIC_API_BASE_URL=https://api.princeproduction.ru`.
+5. **Caddy** — при необходимости обновите e-mail в `deploy/Caddyfile` (по умолчанию `admin@princeproduction.ru`).
+6. **Запуск** — выполните `docker compose -f deploy/docker-compose.prod.yml up -d --build`.
+7. **Сид данных (опционально)** — `docker compose -f deploy/docker-compose.prod.yml exec api pnpm prisma db seed`.
+8. **Проверка** — откройте `https://app.princeproduction.ru` и `https://api.princeproduction.ru/services`.
+
+Детальные пояснения и команды приведены в [docs/deployment-ubuntu.md](docs/deployment-ubuntu.md).
+
