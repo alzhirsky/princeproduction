@@ -1,0 +1,26 @@
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml ./
+COPY apps/web/package.json apps/web/
+COPY packages/shared/package.json packages/shared/
+RUN npm install -g pnpm && pnpm install
+
+FROM deps AS builder
+COPY . .
+RUN pnpm --filter @prince/shared build
+RUN pnpm --filter @prince/web build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=builder /app/apps/web/next.config.mjs ./apps/web/next.config.mjs
+COPY --from=builder /app/apps/web/.next ./apps/web/.next
+COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+RUN npm install -g pnpm && pnpm install --prod --filter @prince/web...
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@prince/web", "start"]
