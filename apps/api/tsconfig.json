@@ -13,6 +13,8 @@
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
+    "strictPropertyInitialization": false,
+    "types": ["node"],
     "paths": {
       "@app/*": ["src/*"],
       "@prince/shared": ["../../packages/shared/src"]
