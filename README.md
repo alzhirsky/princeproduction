@@ -7,7 +7,7 @@ This project replicates the Telegram Marketplace web app interface from the prov
 1. Clone the repository and move into the project folder:
 
    ```bash
-   git clone <your-repo-url>
+   git clone -b codex/transfer-figma-design-to-web-build-l245lu --single-branch https://github.com/alzhirsky/princeproduction.git
    cd princeproduction
    ```
 
